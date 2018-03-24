@@ -13,12 +13,12 @@ function connectToDB() {
     var Request = require('tedious').Request;
 
     var config = {
-        userName: 'carmalou', // update me
-        password: 'Triple@kids3', // update me
+        userName: '', // this would probs be an env variable
+        password: '', // this would probs be an env variable
         server: 'movie-list.database.windows.net',
         options: {
-            encrypt: true
-            // database: 'movie-list'
+            encrypt: true,
+            database: 'movie_list'
         }
     };
 
@@ -29,11 +29,7 @@ function connectToDB() {
             console.log(err);
         } else {
             console.log("i'm in the else");
-            console.log(connection);
-            if(connection.loggedIn == true) {
-                console.log('if');
-                executeStatement();
-            }
+            // executeStatement();
         }
     });
 

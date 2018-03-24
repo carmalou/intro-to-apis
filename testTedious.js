@@ -3,12 +3,12 @@ function connectToDB() {
     var Request = require('tedious').Request;
 
     var config = {
-        userName: 'carmalou', // update me
-        password: 'Triple@kids3', // update me
+        userName: 'fake_user', // update me
+        password: 'p@sswordpassword1', // update me
         server: 'movie-list.database.windows.net',
         options: {
             encrypt: true,
-            database: 'movie-list'
+            database: 'movie_list'
         }
     };
 
