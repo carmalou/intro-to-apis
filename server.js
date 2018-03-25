@@ -119,6 +119,7 @@ function updateMovie(req, res) {
     var tmpMovieDetails = {};
     var sqlStr1 = "update movies \n set ";
     var sqlStr2 = "update movie_details \n set ";
+    var masterStr;
 
     if(movie.movie_id == null) {
         res.send("Must send movie id!");
@@ -158,4 +159,29 @@ function updateMovie(req, res) {
     });
 
     sqlStr2 += "where movie_id = " + movie.movie_id;
+
+    masterStr = sqlStr1 + "\n" + sqlStr2;
+
+    console.log('masterStr ', masterStr);
+
+    // var request = new Request(masterStr, function(err, rowCount) {
+    //     if (err) {
+    //         console.log(err);
+    //         res.send(err);
+    //         return;
+    //     } else {
+    //         console.log(rowCount + ' rows');
+    //     }
+    // });
+
+    // req.app.locals.connection.execSql(request);
+
+    // request.on('error', function(err) {
+    //     res.send(err);
+    //     return;
+    // });
+
+    // request.on('requestCompleted', function() {
+    //     res.sendStatus(200);
+    // });
 }
