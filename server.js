@@ -31,7 +31,6 @@ function connectToDB(req, res) {
         if (err) {
             console.log(err);
         } else {
-            console.log("i'm in the else");
             app.locals.connection = connection;
         }
     });
@@ -108,14 +107,18 @@ function deleteMovie(req, res) {
     });
 
     request.on('requestCompleted', function() {
-        console.log('doneeeeee');
-        console.log(res.app.response);
         res.sendStatus(200);
     });
 }
 
 function updateMovie(req, res) {
     var movie = req.body;
+    var movieArr = ['movie_id', 'movie_title'];
+    var movieDetailsArr = ['description', 'year_released', 'pic_link', 'year_released', 'rating'];
+    var tmpMovie = {};
+    var tmpMovieDetails = {};
+    var sqlStr1 = "update movies \n set ";
+    var sqlStr2 = "update movie_details \n set ";
 
     if(movie.movie_id == null) {
         res.send("Must send movie id!");
@@ -123,6 +126,36 @@ function updateMovie(req, res) {
     }
 
     for(var prop in movie) {
-        console.log('req.params.movie[prop].value ', movie[prop]);
+        if(movieArr.indexOf(prop) >= 0) {
+            tmpMovie[prop] = movie[prop];
+        } else if(movieDetailsArr.indexOf(prop) >= 0) {
+            tmpMovieDetails[prop] = movie[prop];
+        }
     }
+
+    var tmp1 = Object.keys(tmpMovie);
+
+    tmp1.forEach(function (m, i) {
+        sqlStr1 += m + " = " + tmpMovie[m];
+        if((tmp1.length - 1) != i) {
+            sqlStr1 += ", ";
+        } else {
+            sqlStr1 += "\n";
+        }
+    });
+
+    sqlStr1 += "where movie_id = " + movie.movie_id;
+
+    var tmp2 = Object.keys(tmpMovieDetails);
+
+    tmp2.forEach(function (m, i) {
+        sqlStr2 += m + " = " + tmpMovieDetails[m];
+        if((tmp2.length - 1) != i) {
+            sqlStr2 += ", ";
+        } else {
+            sqlStr2 += "\n";
+        }
+    });
+
+    sqlStr2 += "where movie_id = " + movie.movie_id;
 }
