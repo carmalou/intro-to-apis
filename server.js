@@ -114,7 +114,7 @@ function deleteMovie(req, res) {
 
 function updateMovie(req, res) {
     var movie = req.body;
-    var movieArr = ['movie_id', 'movie_title'];
+    var movieArr = ['movie_title'];
     var movieDetailsArr = ['description', 'year_released', 'pic_link', 'year_released', 'rating'];
     var tmpMovie = {};
     var tmpMovieDetails = {};
@@ -163,8 +163,8 @@ function updateMovie(req, res) {
 
     masterStr = sqlStr1 + "\n" + sqlStr2;
 
-    console.log('masterStr ', masterStr);
-
+    // here is where you would post to the db
+    
     // var request = new Request(masterStr, function(err, rowCount) {
     //     if (err) {
     //         console.log(err);
