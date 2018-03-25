@@ -11,6 +11,7 @@ app.get('/', (req, res) => res.send('App is online!'));
 app.get('/getAllMovies', getAllMovies);
 app.delete('/deleteMovie/:id', deleteMovie);
 app.put('/updateMovie', updateMovie);
+app.post('/createMovie', createMovie);
 
 app.listen(3000, connectToDB);
 
@@ -184,4 +185,19 @@ function updateMovie(req, res) {
     // request.on('requestCompleted', function() {
     //     res.sendStatus(200);
     // });
+}
+
+function createMovie(req, res) {
+    var movie = req.body;
+    var movieArr = ['movie_id', 'movie_title'];
+    var movieDetailsArr = ['description', 'year_released', 'pic_link', 'year_released'];
+    var rating = movie.rating;
+    var tmpMovie = {};
+    var tmpMovieDetails = {};
+
+    // here we would build out the sql string
+
+    // here we would send the sql string
+
+    res.send(200);
 }
