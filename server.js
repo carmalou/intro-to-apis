@@ -1,20 +1,17 @@
 const express = require('express');
 const app = express();
-var connection;
+const Connection = require('tedious').Connection;
+const Request = require('tedious').Request;
 
-app.get('/', (req, res) => res.send('Hello World!'));
-
-app.get('/getAll', connectToDB);
+app.get('/', (req, res) => res.send('App is online!'));
+app.get('/getAllMovies', getAllMovies);
 
 app.listen(3000, () => console.log('Example app listening on port 3000!'));
 
-function connectToDB() {
-    var Connection = require('tedious').Connection;
-    var Request = require('tedious').Request;
-
+function connectToDB(req, res) {
     var config = {
-        userName: '', // this would probs be an env variable
-        password: '', // this would probs be an env variable
+        userName: 'fake_user', // this would probs be an env variable
+        password: 'p@sswordpassword1', // this would probs be an env variable
         server: 'movie-list.database.windows.net',
         options: {
             encrypt: true,
@@ -29,30 +26,46 @@ function connectToDB() {
             console.log(err);
         } else {
             console.log("i'm in the else");
-            // executeStatement();
+            app.locals.connection = connection;
+        }
+    });
+}
+
+connectToDB()
+
+function getAllMovies(req, res) {
+    var arr = [];
+
+    var sqlStr = "select * from movies \n"
+    + "inner join \n" 
+    + "movie_details on movies.movie_id = movie_details.movie_id \n"
+    + "inner join \n"
+    + "ratings on movie_details.rating_id = ratings.rating_id \n";
+
+    var request = new Request(sqlStr, function(err, rowCount) {
+        if (err) {
+            console.log(err);
+        } else {
+            console.log(rowCount + ' rows');
         }
     });
 
-    function executeStatement() {
-        request = new Request("select * from movies", function(err, rowCount) {
-            if (err) {
-                console.log(err);
-            } else {
-                console.log(rowCount + ' rows');
-            }
-            connection.close();
-        });
-
-        request.on('row', function(columns) {
-            columns.forEach(function(column) {
+    request.on('row', function(columns) {
+        var tmpObj = {};
+        columns.forEach(function(column) {
             if (column.value === null) {
                 console.log('NULL');
             } else {
-                console.log(column.value);
+                tmpObj[column.metadata.colName] = column.value;
             }
-            });
         });
+        arr.push(tmpObj);
+    });
 
-        connection.execSql(request);
-    }
+    req.app.locals.connection.execSql(request);
+
+    request.on('requestCompleted', function() {
+        console.log('doneeeeee');
+        res.send(arr);
+    });
 }
