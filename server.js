@@ -1,12 +1,18 @@
 const express = require('express');
+const bodyParser = require('body-parser');
 const app = express();
 const Connection = require('tedious').Connection;
 const Request = require('tedious').Request;
 
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
+
 app.get('/', (req, res) => res.send('App is online!'));
 app.get('/getAllMovies', getAllMovies);
+app.delete('/deleteMovie/:id', deleteMovie);
+app.put('/updateMovie', updateMovie);
 
-app.listen(3000, () => console.log('Example app listening on port 3000!'));
+app.listen(3000, connectToDB);
 
 function connectToDB(req, res) {
     var config = {
@@ -30,8 +36,6 @@ function connectToDB(req, res) {
         }
     });
 }
-
-connectToDB()
 
 function getAllMovies(req, res) {
     var arr = [];
@@ -62,10 +66,63 @@ function getAllMovies(req, res) {
         arr.push(tmpObj);
     });
 
+    request.on('error', function(err) {
+        res.send(err);
+        return;
+    });
+
     req.app.locals.connection.execSql(request);
 
     request.on('requestCompleted', function() {
         console.log('doneeeeee');
         res.send(arr);
     });
+}
+
+function deleteMovie(req, res) {
+
+    if(req.params.id == null) {
+        res.send("Must send movie id!");
+        return;
+    }
+    
+    var movieID = req.params.id;
+    var sqlStr = "delete from movies where movie_id=" + movieID + "\n"
+    + "delete from movie_details where movie_id=" + movieID;
+
+    var request = new Request(sqlStr, function(err, rowCount) {
+        if (err) {
+            console.log(err);
+            res.send(err);
+            return;
+        } else {
+            console.log(rowCount + ' rows');
+        }
+    });
+
+    req.app.locals.connection.execSql(request);
+
+    request.on('error', function(err) {
+        res.send(err);
+        return;
+    });
+
+    request.on('requestCompleted', function() {
+        console.log('doneeeeee');
+        console.log(res.app.response);
+        res.sendStatus(200);
+    });
+}
+
+function updateMovie(req, res) {
+    var movie = req.body;
+
+    if(movie.movie_id == null) {
+        res.send("Must send movie id!");
+        return;
+    }
+
+    for(var prop in movie) {
+        console.log('req.params.movie[prop].value ', movie[prop]);
+    }
 }

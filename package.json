@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/carmalou/intro-to-apis#readme",
   "dependencies": {
+    "body-parser": "^1.18.2",
     "express": "^4.16.3",
     "tedious": "^2.3.1"
   }
